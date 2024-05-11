@@ -34,10 +34,10 @@ import java.util.List;
 public class GoogleCalendarService {
     private static final String APPLICATION_NAME = "TaskMaster";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final String TOKENS_DIRECTORY_PATH = "/data/tokens";
 
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
-    private static final String CREDENTIALS_FILE_PATH = "/client_secret.json";
+    private static final String CREDENTIALS_FILE_PATH = "/data/secret/client_secret.json";
 
     public String createEvent(String userGmail, GoogleCalendarEvent googleCalendarEvent) throws GeneralSecurityException, IOException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
