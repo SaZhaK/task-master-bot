@@ -21,7 +21,6 @@ import com.google.api.services.calendar.model.EventReminder
 import edu.akolomiets.bot.entity.GoogleCalendarEvent
 import org.springframework.stereotype.Service
 import java.io.File
-import java.io.IOException
 import java.io.InputStreamReader
 import java.time.ZoneId
 import java.util.*
@@ -73,34 +72,33 @@ class GoogleCalendarService {
         return createdEvent.htmlLink
     }
 
+    private fun getCredentials(HTTP_TRANSPORT: NetHttpTransport): Credential {
+        val `in` =
+            GoogleCalendarService::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
+        val clientSecrets = GoogleClientSecrets.load(
+            JSON_FACTORY,
+            InputStreamReader(`in`)
+        )
+        val flow = GoogleAuthorizationCodeFlow.Builder(
+            HTTP_TRANSPORT,
+            JSON_FACTORY,
+            clientSecrets,
+            SCOPES
+        )
+            .setDataStoreFactory(FileDataStoreFactory(File(TOKENS_DIRECTORY_PATH)))
+            .build()
+        val receiver = LocalServerReceiver.Builder()
+            .setPort(9000)
+            .setCallbackPath("/login/google")
+            .build()
+        return AuthorizationCodeInstalledApp(flow, receiver).authorize("user")
+    }
+
     companion object {
         private const val APPLICATION_NAME = "TaskMaster"
         private val JSON_FACTORY: JsonFactory = GsonFactory.getDefaultInstance()
-        private const val TOKENS_DIRECTORY_PATH = "/data/tokens"
+        private const val TOKENS_DIRECTORY_PATH = "data/tokens"
         private val SCOPES = listOf(CalendarScopes.CALENDAR)
-        private const val CREDENTIALS_FILE_PATH = "/data/secret/client_secret.json"
-
-        @Throws(IOException::class)
-        private fun getCredentials(HTTP_TRANSPORT: NetHttpTransport): Credential {
-            val `in` =
-                GoogleCalendarService::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
-            val clientSecrets = GoogleClientSecrets.load(
-                JSON_FACTORY,
-                InputStreamReader(`in`)
-            )
-            val flow = GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT,
-                JSON_FACTORY,
-                clientSecrets,
-                SCOPES
-            )
-                .setDataStoreFactory(FileDataStoreFactory(File(TOKENS_DIRECTORY_PATH)))
-                .build()
-            val receiver = LocalServerReceiver.Builder()
-                .setPort(9000)
-                .setCallbackPath("/login/google")
-                .build()
-            return AuthorizationCodeInstalledApp(flow, receiver).authorize("user")
-        }
+        private const val CREDENTIALS_FILE_PATH = "/client_secret.json"
     }
 }

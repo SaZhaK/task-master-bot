@@ -6,6 +6,7 @@ package edu.akolomiets.bot.entity.enums
  */
 enum class BotUserState(private val dbKey: String) {
     IDLE("I"),
+    LOGIN("L"),
     SUMMARY_CREATION("SC"),
     START_TIME_CREATION("STC"),
     END_TIME_CREATION("ETC");

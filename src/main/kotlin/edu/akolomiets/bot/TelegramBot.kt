@@ -37,8 +37,8 @@ class TelegramBot constructor(
             val command = update.message.text
             if (command == "/start") {
                 startCommand(chatId, firstName)
-            } else if (command.startsWith("/login")) {
-                loginCommand(chatId, command)
+            } else if (command.startsWith("/mail")) {
+                mailCommand(chatId)
             } else if (command.startsWith("/createEvent")){
                 createEventCommand(chatId)
             } else if (command.startsWith("/")) {
@@ -54,7 +54,8 @@ class TelegramBot constructor(
 
         if (botUser.state == BotUserState.SUMMARY_CREATION) {
             val answer = """
-            Когда начнется это событие? Напишите дату в таком формате: 30.04.2024,19:00
+            Когда начнется это событие?
+            Напишите дату в таком формате: 30.04.2024,19:00
             """.trimIndent()
 
             sendMessage(chatId, answer)
@@ -71,7 +72,8 @@ class TelegramBot constructor(
             botUserRepository.save(botUser)
         } else if (botUser.state == BotUserState.START_TIME_CREATION) {
             val answer = """
-            Когда завершится это событие? Напишите дату в таком формате: 30.04.2024,20:00
+            Когда завершится это событие?
+            Напишите дату в таком формате: 30.04.2024,20:00
             """.trimIndent()
 
             sendMessage(chatId, answer)
@@ -113,6 +115,18 @@ class TelegramBot constructor(
                 this.state = BotUserState.IDLE
             }
             botUserRepository.save(botUser)
+        } else if (botUser.state == BotUserState.LOGIN) {
+            botUser.apply {
+                this.gmail = command
+                this.state = BotUserState.IDLE
+            }
+            botUserRepository.save(botUser)
+
+            val answer = """
+            Запомнил Вашу почту, теперь смогу создавать для Вас заметки в календаре.
+            """.trimIndent()
+
+            sendMessage(chatId, answer)
         }
     }
 
@@ -137,14 +151,16 @@ class TelegramBot constructor(
 
     private fun startCommand(chatId: Long, name: String) {
         val answer = """
-            Привет, $name! Я TaskMaster бот - твой персональный помощник.
+            Здравствуйте, $name! Я TaskMaster - Ващ персональный бот-помощник.
             Я понимаю следующие команды:
             - /start - начать диалог
+            - /mail - указать почту
+            - /createEvent - создать событие
             """.trimIndent()
 
         sendMessage(chatId, answer)
 
-        val botUser = botUserRepository.findByChatId(chatId)
+        var botUser = botUserRepository.findByChatId(chatId)
         if (botUser == null) {
             val newBotUser = BotUser().apply {
                 this.chatId = chatId
@@ -152,39 +168,37 @@ class TelegramBot constructor(
                 this.state = BotUserState.IDLE
             }
             botUserRepository.save(newBotUser)
+            botUser = newBotUser
         } else {
             botUser.apply {
                 this.lastMessageTime = LocalDateTime.now()
-                botUserRepository.save(botUser)
             }
+            botUserRepository.save(botUser)
+        }
+
+        if (botUser.gmail == null) {
+            val answer2 = """
+            Укажите, пожалуйста, Ваш адрес электронной почты, чтобы я мог создавать для Вас события в календаре.
+            """.trimIndent()
+
+            sendMessage(chatId, answer2)
+
+            botUser.state = BotUserState.LOGIN
+            botUserRepository.save(botUser)
         }
     }
 
-    private fun loginCommand(chatId: Long, command: String) {
-        val parts = command.split(" ")
-        if (parts.size != 2) {
-            val answer = """
-            Кажется, вы неправильно ввели команду.
-            Команда имеет вид '/login my_email@example.com'
-            Попробуйте, пожалуйста, еще раз
-            """.trimIndent()
-
-            sendMessage(chatId, answer)
-            return
-        }
-        val gmail = parts[1]
-
+    private fun mailCommand(chatId: Long) {
         val botUser = botUserRepository.findByChatId(chatId)!! // TODO if null
-        botUser.apply {
-            this.gmail = gmail
-        }
-        botUserRepository.save(botUser)
 
         val answer = """
-            Запомнил вашу почту, теперь смогу создавать для Вас заметки в календаре.
+            Введите, пожалуйста, Ваш адрес электронной почты, чтобы я мог создавать для Вас события в календаре.
             """.trimIndent()
 
         sendMessage(chatId, answer)
+
+        botUser.state = BotUserState.LOGIN
+        botUserRepository.save(botUser)
     }
 
     private fun unknownCommand(chatId: Long, command: String) {
@@ -192,6 +206,8 @@ class TelegramBot constructor(
             К сожалению, я не знаю, что значит команда '$command'.
             Я понимаю следующие команды:
             - /start - начать диалог
+            - /mail - указать почту
+            - /createEvent - создать событие
             """.trimIndent()
 
         sendMessage(chatId, answer)
