@@ -1,4 +1,4 @@
-package edu.akolomiets.bot
+package edu.akolomiets.bot.service
 
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
@@ -7,7 +7,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.DateTime
 import com.google.api.client.util.store.FileDataStoreFactory
@@ -26,12 +25,16 @@ import java.time.ZoneId
 import java.util.*
 import java.util.List
 
+/**
+ * @author akolomiets
+ * @since 1.0.0
+ */
 @Service
 class GoogleCalendarService {
 
     fun createEvent(userGmail: String?, googleCalendarEvent: GoogleCalendarEvent): String {
-        val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
-        val service = Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+        val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
+        val service = Calendar.Builder(httpTransport, JSON_FACTORY, getCredentials(httpTransport))
             .setApplicationName(APPLICATION_NAME)
             .build()
         val event = Event()
@@ -73,11 +76,10 @@ class GoogleCalendarService {
     }
 
     private fun getCredentials(HTTP_TRANSPORT: NetHttpTransport): Credential {
-        val `in` =
-            GoogleCalendarService::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
+        val credentialInputStream = GoogleCalendarService::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
         val clientSecrets = GoogleClientSecrets.load(
             JSON_FACTORY,
-            InputStreamReader(`in`)
+            InputStreamReader(credentialInputStream)
         )
         val flow = GoogleAuthorizationCodeFlow.Builder(
             HTTP_TRANSPORT,
@@ -88,17 +90,20 @@ class GoogleCalendarService {
             .setDataStoreFactory(FileDataStoreFactory(File(TOKENS_DIRECTORY_PATH)))
             .build()
         val receiver = LocalServerReceiver.Builder()
-            .setPort(9000)
-            .setCallbackPath("/login/google")
+            .setPort(CALLBACK_PORT)
+            .setCallbackPath(CALLBACK_PATH)
             .build()
         return AuthorizationCodeInstalledApp(flow, receiver).authorize("user")
     }
 
     companion object {
         private const val APPLICATION_NAME = "TaskMaster"
-        private val JSON_FACTORY: JsonFactory = GsonFactory.getDefaultInstance()
-        private const val TOKENS_DIRECTORY_PATH = "data/tokens"
+        private val JSON_FACTORY = GsonFactory.getDefaultInstance()
         private val SCOPES = listOf(CalendarScopes.CALENDAR)
+
+        private const val TOKENS_DIRECTORY_PATH = "data/tokens"
         private const val CREDENTIALS_FILE_PATH = "/client_secret.json"
+        private const val CALLBACK_PATH = "/login/google"
+        private const val CALLBACK_PORT = 9000
     }
 }
