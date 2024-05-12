@@ -1,0 +1,25 @@
+<mxfile host="app.diagrams.net" modified="2024-05-12T08:54:05.145Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" etag="XnnSoDLaeSFTQkcUNdW_" version="24.4.0" type="device">
+  <diagram name="Page-1" id="dIv0B-RPaSmzQIyS8kXZ">
+    <mxGraphModel dx="734" dy="492" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="1fTZdZYs5Hzyg7lxtIju-9" value="BotUser" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="253" y="240" width="160" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="1fTZdZYs5Hzyg7lxtIju-10" value="+ id&lt;br&gt;+ chatId&lt;br&gt;+ gmail&lt;div&gt;+ lastMessageTime&lt;/div&gt;&lt;div&gt;+ state&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" vertex="1" parent="1fTZdZYs5Hzyg7lxtIju-9">
+          <mxGeometry y="50" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="1fTZdZYs5Hzyg7lxtIju-12" value="GoogleCalendarEvent" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="220" width="160" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="1fTZdZYs5Hzyg7lxtIju-13" value="+ id&lt;br&gt;+ botUserId&lt;br&gt;+ summary&lt;div&gt;+ startDate&lt;/div&gt;&lt;div&gt;+ endDate&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" vertex="1" parent="1fTZdZYs5Hzyg7lxtIju-12">
+          <mxGeometry y="50" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="1fTZdZYs5Hzyg7lxtIju-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.044;entryY=0.111;entryDx=0;entryDy=0;entryPerimeter=0;exitX=-0.008;exitY=0.324;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="1fTZdZYs5Hzyg7lxtIju-13" target="1fTZdZYs5Hzyg7lxtIju-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
